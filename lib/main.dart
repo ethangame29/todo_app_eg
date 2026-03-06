@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import './views/todo_widget.dart';
+import './models/todo_list.dart';
 import './models/todo.dart';
 
 void main() {
-  runApp(const TodoApp());
+  runApp(
+      ChangeNotifierProvider(
+        create: (context) => TodoList(),
+        child: const TodoApp(),
+      )
+    );
 }
 
 class TodoApp extends StatelessWidget {
@@ -29,11 +37,6 @@ class TodoHomePage extends StatefulWidget {
 }
 
 class _TodoHomePageState extends State<TodoHomePage> {
-  final List<Todo> todos = [
-    Todo(name: 'Get Food', description: 'Stand in front of fridge for 10 minutes and decide i dont want anything in there ghahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahasasssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssf'),
-    Todo(name: 'Solve world hunger', description: 'Dont use fridge'),
-    Todo(name: 'Catch the fridge', description: 'We are going to need a bigger boat', complete: true),
-  ];
 
   final TextEditingController _controllerName = TextEditingController();
   final TextEditingController _controllerDescription = TextEditingController();
@@ -46,32 +49,16 @@ class _TodoHomePageState extends State<TodoHomePage> {
         backgroundColor: Theme.of(context).primaryColorLight,
       ),
       body: Center(
-        child: ListView.builder(itemCount: todos.length, itemBuilder: (context, index) {
-          return Card(
-            color: todos[index].complete ? Colors.cyan : Colors.blueGrey,
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(todos[index].name, style: Theme.of(context).textTheme.headlineSmall),
-                        Text(todos[index].description, style: Theme.of(context).textTheme.labelMedium,),
-                      ],
-                    ), 
-                  ),
-
-                  Checkbox(value: todos[index].complete, onChanged: (value) {}),
-                ],
-              ),
-            ),
-          );
-        },),
+        child: Consumer<TodoList>(
+          builder: (BuildContext context, TodoList stateObject, Widget? child) {
+            return ListView.builder(
+              itemCount: stateObject.todos.length, 
+              itemBuilder: (context, index) {
+                return TodoWidget(todo: stateObject.todos[index]);
+              },
+            );
+          },
+        )
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _openAddTodo, 
@@ -109,7 +96,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
         actions: [
           ElevatedButton(onPressed: (){
               setState(() {
-                todos.add(
+                Provider.of<TodoList>(context,listen: false).add(
                   Todo(
                     name: _controllerName.text,
                     description: _controllerDescription.text,
