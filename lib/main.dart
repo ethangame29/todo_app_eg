@@ -47,6 +47,9 @@ class _TodoHomePageState extends State<TodoHomePage> {
       appBar: AppBar(
         title: Text('My Fancy Todo App'), 
         backgroundColor: Theme.of(context).primaryColorLight,
+        actions: [
+          Text('${Provider.of<TodoList>(context,listen: true).todoCompleted.toString()} / ${Provider.of<TodoList>(context,listen: false).todoCount.toString()}'),
+        ],
       ),
       body: Center(
         child: Consumer<TodoList>(

@@ -16,6 +16,8 @@ class TodoList extends ChangeNotifier {
 
   int get todoCount => _todos.length;
 
+  int get todoCompleted => _completed();
+
   void add(Todo todo) {
     _todos.add(todo);
     notifyListeners();
@@ -34,6 +36,15 @@ class TodoList extends ChangeNotifier {
     //to know something has been updated and might need reflected (or redrawn) on the UI.
   }
 
+  int _completed() {
+    int completedTasks = 0;
+    for (var task in _todos) {
+      if (task.complete == true) {
+        completedTasks += 1;
+      }
+    }
+    return completedTasks;
+  }
 
   void updateTodo(Todo todo) {
     Todo listTodo = _todos.firstWhere(
