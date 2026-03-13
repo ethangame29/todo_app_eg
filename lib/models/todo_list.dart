@@ -1,15 +1,12 @@
 //this my state object
 import 'dart:collection';
-
+import 'package:get/get.dart';
 import 'package:flutter/widgets.dart';
+import 'package:todo_app_eg/services/datasource.dart';
 import './todo.dart';
 
 class TodoList extends ChangeNotifier {
-  final List<Todo> _todos = [
-    Todo(name: 'Get Food', description: 'Stand in front of fridge for 10 minutes and decide i dont want anything in there ghahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahasasssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssf'),
-    Todo(name: 'Solve world hunger', description: 'Dont use fridge'),
-    Todo(name: 'Catch the fridge', description: 'We are going to need a bigger boat', complete: true),
-  ];
+  final List<Todo> _todos = [];
 
 
   UnmodifiableListView<Todo> get todos => UnmodifiableListView(_todos);
@@ -18,8 +15,16 @@ class TodoList extends ChangeNotifier {
 
   int get todoCompleted => _completed();
 
-  void add(Todo todo) {
-    _todos.add(todo);
+  Future<List<Todo>> refresh() async {
+    IDataSource dataSource = Get.find();
+    _todos.clear();
+    _todos.addAll(await dataSource.browse());
+    return _todos;
+  }
+
+  Future add(Todo todo) async {
+    IDataSource dataSource = Get.find();
+    await dataSource.add(todo);
     notifyListeners();
   }
 

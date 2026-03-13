@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:todo_app_eg/services/datasource.dart';
+import 'package:todo_app_eg/services/sql_datasource.dart';
 import './views/todo_widget.dart';
 import './models/todo_list.dart';
 import './models/todo.dart';
+import 'package:get/get.dart';
 
 void main() {
-  runApp(
+  WidgetsFlutterBinding.ensureInitialized();
+  Get.putAsync<IDataSource>(() =>SqlDatasource.createAsync()).whenComplete(
+    () => runApp(
       ChangeNotifierProvider(
         create: (context) => TodoList(),
         child: const TodoApp(),
       )
-    );
+    ),
+  );
 }
 
 class TodoApp extends StatelessWidget {
@@ -48,17 +54,35 @@ class _TodoHomePageState extends State<TodoHomePage> {
         title: Text('My Fancy Todo App'), 
         backgroundColor: Theme.of(context).primaryColorLight,
         actions: [
-          Text('${Provider.of<TodoList>(context,listen: true).todoCompleted.toString()} / ${Provider.of<TodoList>(context,listen: false).todoCount.toString()}'),
+          Text('Tasks Completed: ${Provider.of<TodoList>(context,listen: true).todoCompleted.toString()} / ${Provider.of<TodoList>(context,listen: false).todoCount.toString()}'),
         ],
       ),
       body: Center(
         child: Consumer<TodoList>(
-          builder: (BuildContext context, TodoList stateObject, Widget? child) {
-            return ListView.builder(
-              itemCount: stateObject.todos.length, 
-              itemBuilder: (context, index) {
-                return TodoWidget(todo: stateObject.todos[index]);
-              },
+          builder: (
+            BuildContext context, 
+            TodoList stateObject, 
+            Widget? child
+            ) {
+            return FutureBuilder(
+              future: stateObject.refresh(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.hasData && snapshot.data != null) {
+                  return ListView.builder(
+                    itemCount: stateObject.todos.length, 
+                    itemBuilder: (context, index) {
+                      return TodoWidget(todo: stateObject.todos[index]);
+                    },
+                  );
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Icon(Icons.error),);
+                }
+                return Center(
+                  child: CircularProgressIndicator(color: Colors.amber,),
+                );
+              }
             );
           },
         )
@@ -101,6 +125,7 @@ class _TodoHomePageState extends State<TodoHomePage> {
               setState(() {
                 Provider.of<TodoList>(context,listen: false).add(
                   Todo(
+                    id: '',
                     name: _controllerName.text,
                     description: _controllerDescription.text,
                   ),
