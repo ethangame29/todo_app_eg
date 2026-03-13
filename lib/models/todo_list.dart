@@ -51,14 +51,18 @@ class TodoList extends ChangeNotifier {
     return completedTasks;
   }
 
-  void updateTodo(Todo todo) {
-    Todo listTodo = _todos.firstWhere(
-      (t) => t.name == todo.name,
-    );
-    int index = _todos.indexOf(
-      listTodo
-    ); // We dont have the id or an identifier yet
-    _todos[index] = todo;
+  void updateTodo(Todo todo) async {
+    //Todo listTodo = _todos.firstWhere(
+    //  (t) => t.name == todo.name,
+    //);
+    //int index = _todos.indexOf(
+    //  listTodo
+    //); // We dont have the id or an identifier yet
+    
+    //_todos[index] = todo;
+    
+    IDataSource dataSource = Get.find();
+    await dataSource.edit(todo);
     notifyListeners();
   }
 }

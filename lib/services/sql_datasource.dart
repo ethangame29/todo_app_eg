@@ -51,9 +51,11 @@ class SqlDatasource implements IDataSource {
   }
 
   @override
-  Future<bool> edit(Todo todo) {
-    // TODO: implement edit
-    throw UnimplementedError();
+  Future<bool> edit(Todo todo) async {
+    Map<String,dynamic> editiedMap = todo.toMap();
+    editiedMap.remove('id');
+    
+    return await _database.update('todos', editiedMap, where: 'id = ${todo.id}') != 0;
   }
 
   @override
