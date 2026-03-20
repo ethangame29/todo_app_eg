@@ -19,13 +19,14 @@ class TodoList extends ChangeNotifier {
     IDataSource dataSource = Get.find();
     _todos.clear();
     _todos.addAll(await dataSource.browse());
+    notifyListeners();
     return _todos;
   }
 
   Future add(Todo todo) async {
     IDataSource dataSource = Get.find();
     await dataSource.add(todo);
-    notifyListeners();
+    await refresh();
   }
 
   void removeAll() {
@@ -63,6 +64,6 @@ class TodoList extends ChangeNotifier {
     
     IDataSource dataSource = Get.find();
     await dataSource.edit(todo);
-    notifyListeners();
+    await refresh();
   }
 }

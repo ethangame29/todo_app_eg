@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app_eg/services/datasource.dart';
+import '../services/hive_datasource.dart';
 import 'package:todo_app_eg/services/sql_datasource.dart';
 import './views/todo_widget.dart';
 import './models/todo_list.dart';
@@ -9,7 +10,7 @@ import 'package:get/get.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.putAsync<IDataSource>(() =>SqlDatasource.createAsync()).whenComplete(
+  Get.putAsync<IDataSource>(() =>HiveDatasource.createAsync()).whenComplete(
     () => runApp(
       ChangeNotifierProvider(
         create: (context) => TodoList(),
@@ -64,25 +65,34 @@ class _TodoHomePageState extends State<TodoHomePage> {
             TodoList stateObject, 
             Widget? child
             ) {
-            return FutureBuilder(
-              future: stateObject.refresh(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done &&
-                  snapshot.hasData && snapshot.data != null) {
-                  return ListView.builder(
-                    itemCount: stateObject.todos.length, 
-                    itemBuilder: (context, index) {
-                      return TodoWidget(todo: stateObject.todos[index]);
-                    },
-                  );
+            //return FutureBuilder(
+            //  future: stateObject.refresh(),
+            //  builder: (context, snapshot) {
+            //    if (snapshot.connectionState == ConnectionState.done &&
+            //      snapshot.hasData && snapshot.data != null) {
+            //      return ListView.builder(
+            //        itemCount: stateObject.todos.length, 
+            //        itemBuilder: (context, index) {
+            //          return TodoWidget(todo: stateObject.todos[index]);
+            //        },
+            //      );
+            //    }
+            //    if (snapshot.hasError) {
+            //      return Center(child: Icon(Icons.error),);
+            //    }
+            //    return Center(
+            //      child: CircularProgressIndicator(color: Colors.amber,),
+            //    );
+            //  }
+            //);
+            return RefreshIndicator(
+              onRefresh: stateObject.refresh, 
+              child: ListView.builder(
+                itemCount: stateObject.todos.length,
+                itemBuilder: (context, index) {
+                  return TodoWidget(todo: stateObject.todos[index]);
                 }
-                if (snapshot.hasError) {
-                  return Center(child: Icon(Icons.error),);
-                }
-                return Center(
-                  child: CircularProgressIndicator(color: Colors.amber,),
-                );
-              }
+              )
             );
           },
         )
