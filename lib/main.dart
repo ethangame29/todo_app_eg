@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_app_eg/services/datasource.dart';
 import '../services/hive_datasource.dart';
-import 'package:todo_app_eg/services/sql_datasource.dart';
+
 import './views/todo_widget.dart';
 import './models/todo_list.dart';
 import './models/todo.dart';
@@ -65,6 +65,15 @@ class _TodoHomePageState extends State<TodoHomePage> {
             TodoList stateObject, 
             Widget? child
             ) {
+              return RefreshIndicator(
+              onRefresh: stateObject.refresh, 
+              child: ListView.builder(
+                itemCount: stateObject.todos.length,
+                itemBuilder: (context, index) {
+                  return TodoWidget(todo: stateObject.todos[index]);
+                }
+              )
+            );
             //return FutureBuilder(
             //  future: stateObject.refresh(),
             //  builder: (context, snapshot) {
@@ -85,15 +94,6 @@ class _TodoHomePageState extends State<TodoHomePage> {
             //    );
             //  }
             //);
-            return RefreshIndicator(
-              onRefresh: stateObject.refresh, 
-              child: ListView.builder(
-                itemCount: stateObject.todos.length,
-                itemBuilder: (context, index) {
-                  return TodoWidget(todo: stateObject.todos[index]);
-                }
-              )
-            );
           },
         )
       ),
