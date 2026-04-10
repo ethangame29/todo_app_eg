@@ -35,9 +35,10 @@ class TodoList extends ChangeNotifier {
     //Might never use this?
   }
 
-  void remove(Todo todo) {
-    _todos.remove(todo);
-    notifyListeners(); 
+  void remove(Todo todo) async {
+    IDataSource dataSource = Get.find();
+    await dataSource.delete(todo);
+    await refresh();
     //Calling change notifiers notify listeners will allow anyone listening to the object state
     //to know something has been updated and might need reflected (or redrawn) on the UI.
   }

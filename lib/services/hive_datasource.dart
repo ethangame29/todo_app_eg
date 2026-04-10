@@ -38,7 +38,7 @@ class HiveDatasource implements IDataSource{
   @override
   Future<bool> delete(Todo todo) async {
     Box<Todo> box = Hive.box('todos');
-    await box.deleteAt(int.parse(todo.id));
+    await box.delete(int.parse(todo.id));
     return true;
   }
 

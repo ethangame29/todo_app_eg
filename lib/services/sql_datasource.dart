@@ -45,9 +45,8 @@ class SqlDatasource implements IDataSource {
   }
 
   @override
-  Future<bool> delete(Todo todo) {
-    // TODO: implement delete
-    throw UnimplementedError();
+  Future<bool> delete(Todo todo) async {
+    return await _database.delete('todos', where: 'id = ${todo.id}') != 0;
   }
 
   @override
