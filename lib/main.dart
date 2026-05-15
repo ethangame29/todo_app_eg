@@ -56,7 +56,15 @@ class _TodoHomePageState extends State<TodoHomePage> {
         title: Text('My Fancy Todo App'), 
         backgroundColor: Theme.of(context).primaryColorLight,
         actions: [
-          Text('Tasks Completed: ${Provider.of<TodoList>(context,listen: true).todoCompleted.toString()} / ${Provider.of<TodoList>(context,listen: false).todoCount.toString()}'),
+          Consumer<TodoList>(
+            builder: (
+              BuildContext context, 
+              TodoList stateObject, 
+              Widget? child
+            ) {
+              return Text('Tasks Completed: ${stateObject.todoCompleted} / ${stateObject.todoCount}');
+            },
+          )
         ],
       ),
       body: Center(
@@ -65,36 +73,36 @@ class _TodoHomePageState extends State<TodoHomePage> {
             BuildContext context, 
             TodoList stateObject, 
             Widget? child
-            ) {
-              return RefreshIndicator(
-              onRefresh: stateObject.refresh, 
-              child: ListView.builder(
-                itemCount: stateObject.todos.length,
-                itemBuilder: (context, index) {
-                  return TodoWidget(todo: stateObject.todos[index]);
-                }
-              )
-            );
-            //return FutureBuilder(
-            //  future: stateObject.refresh(),
-            //  builder: (context, snapshot) {
-            //    if (snapshot.connectionState == ConnectionState.done &&
-            //      snapshot.hasData && snapshot.data != null) {
-            //      return ListView.builder(
-            //        itemCount: stateObject.todos.length, 
-            //        itemBuilder: (context, index) {
-            //          return TodoWidget(todo: stateObject.todos[index]);
-            //        },
-            //      );
-            //    }
-            //    if (snapshot.hasError) {
-            //      return Center(child: Icon(Icons.error),);
-            //    }
-            //    return Center(
-            //      child: CircularProgressIndicator(color: Colors.amber,),
-            //    );
-            //  }
-            //);
+          ) {
+            return RefreshIndicator(
+            onRefresh: stateObject.refresh, 
+            child: ListView.builder(
+              itemCount: stateObject.todos.length,
+              itemBuilder: (context, index) {
+                return TodoWidget(todo: stateObject.todos[index]);
+              }
+            )
+          );
+          //return FutureBuilder(
+          //  future: stateObject.refresh(),
+          //  builder: (context, snapshot) {
+          //    if (snapshot.connectionState == ConnectionState.done &&
+          //      snapshot.hasData && snapshot.data != null) {
+          //      return ListView.builder(
+          //        itemCount: stateObject.todos.length, 
+          //        itemBuilder: (context, index) {
+          //          return TodoWidget(todo: stateObject.todos[index]);
+          //        },
+          //      );
+          //    }
+          //    if (snapshot.hasError) {
+          //      return Center(child: Icon(Icons.error),);
+          //    }
+          //    return Center(
+          //      child: CircularProgressIndicator(color: Colors.amber,),
+          //    );
+          //  }
+          //);
           },
         )
       ),
